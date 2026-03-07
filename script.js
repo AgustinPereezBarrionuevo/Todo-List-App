@@ -18,6 +18,23 @@ document.addEventListener('DOMContentLoaded', () =>{
         progressBar.style.width = totalTasks ? `${(completedTasks / totalTasks) * 100}%` : '0%';
         progressNumbers.textContent = `${completedTasks} / ${totalTasks}`;
 
+        if (checkCompletion && totalTasks > 0 && completedTasks === totalTasks) {
+            Confetti();
+        }
+    };
+
+    const saveTasksToLocalStorage = () => {
+        const tasks = Array.from(taskList.querySelectorAll('li')).map(li => ({
+            text: li.querySelector('span').textContent, completed: li.querySelector('.task-checkbox').checked
+        }))
+        localStorage.setItem('tasks', JSON.stringify(tasks))
+    };
+
+    const loadTasksFromLocalStorage = () => {
+        const savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        savedTasks.forEach(({text, completed}) => addTask(text, completed, false));
+        toggleEmptyState();
+        updateProgress();
     };
 
     const addTask = (text, completed = false, checkCompletion = true) => {
@@ -46,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () =>{
             editBtn.style.opacity = isChecked ? '0.5' : '1';
             editBtn.style.pointerEvents = isChecked ? 'none' : 'auto';
             updateProgress();
+            saveTasksToLocalStorage();
         });
 
 
@@ -55,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () =>{
                 li.remove();
                 toggleEmptyState();
                 updateProgress(false);
+                saveTasksToLocalStorage();
             }
         });
 
@@ -62,12 +81,14 @@ document.addEventListener('DOMContentLoaded', () =>{
             li.remove();
             toggleEmptyState();
             updateProgress();
+            saveTasksToLocalStorage();
         });
        
         taskList.appendChild(li)
         taskInput.value = '';
         toggleEmptyState();
         updateProgress(checkCompletion);
+        saveTasksToLocalStorage();
     };
 
   addTaskBtn.addEventListener('click', () => addTask());
@@ -78,12 +99,14 @@ taskInput.addEventListener('keypress', (e) => {
     }
 });
 
+
 const form = document.querySelector('.input-area');
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
     });
 
+    loadTasksFromLocalStorage();   
 });
 
 const Confetti = ( ) => {
