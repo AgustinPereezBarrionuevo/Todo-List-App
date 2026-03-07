@@ -4,13 +4,23 @@ document.addEventListener('DOMContentLoaded', () =>{
     const taskList = document.getElementById('task-list');
     const emptyImage = document.querySelector('.empty-image');
     const todosContainer = document.querySelector('.todos-container');
+    const progressBar = document.getElementById('progress');
+    const progressNumbers = document.getElementById('numbers');
 
     const toggleEmptyState = () => {
         emptyImage.style.display = taskList.children.length === 0 ? 'block' : 'none';
         todosContainer.style.width = taskList.children.length > 0 ? '100%' : '50%';
     }
 
-    const addTask = (text, completed = false) => {
+    const updateProgress = (checkCompletion = true) => {
+        const totalTasks = taskList.children.length;
+        const completedTasks = taskList.querySelectorAll('.task-checkbox:checked').length;
+        progressBar.style.width = totalTasks ? `${(completedTasks / totalTasks) * 100}%` : '0%';
+        progressNumbers.textContent = `${completedTasks} / ${totalTasks}`;
+
+    };
+
+    const addTask = (text, completed = false, checkCompletion = true) => {
         const taskText = text || taskInput.value.trim();
         if (!taskText) {
             return;
@@ -35,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () =>{
             editBtn.disabled = isChecked;
             editBtn.style.opacity = isChecked ? '0.5' : '1';
             editBtn.style.pointerEvents = isChecked ? 'none' : 'auto';
+            updateProgress();
         });
 
 
@@ -43,19 +54,22 @@ document.addEventListener('DOMContentLoaded', () =>{
                 taskInput.value = li.querySelector('span').textContent;
                 li.remove();
                 toggleEmptyState();
+                updateProgress(false);
             }
         });
 
         li.querySelector('.delete-btn').addEventListener('click', () => {
             li.remove();
             toggleEmptyState();
+            updateProgress();
         });
        
         taskList.appendChild(li)
         taskInput.value = '';
         toggleEmptyState();
+        updateProgress(checkCompletion);
     };
-    
+
   addTaskBtn.addEventListener('click', () => addTask());
 
 taskInput.addEventListener('keypress', (e) => {
@@ -66,8 +80,31 @@ taskInput.addEventListener('keypress', (e) => {
 
 const form = document.querySelector('.input-area');
 
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-});
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+    });
 
 });
+
+const Confetti = ( ) => {
+const count = 100;
+  const defaults = { origin: { y: 1 } };
+
+  function fire(particleRatio, opts) {
+    confetti(
+      Object.assign({}, defaults, opts, {
+        particleCount: Math.floor(count * particleRatio),
+      })
+    );
+  }
+
+  let y = 1;
+  const interval = setInterval(() => {
+    fire(0.2, { spread: 60, startVelocity: 30, scalar: 0.8, origin: { y } });
+    fire(0.1, { spread: 120, startVelocity: 55, scalar: 1.2 });
+
+    y -= 0.05;
+
+    if (y <= 0.3) clearInterval(interval);
+  }, 8);
+};
