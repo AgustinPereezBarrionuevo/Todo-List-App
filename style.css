@@ -117,6 +117,7 @@ task-list li:hover {
 #task-list li .task-checkbox {
     min-width: 20px;
     height: 20px;
+    border: solid 2px rgba(255, 255, 255, 0.3);
     background: transparent;
     border-radius: 50%;
     appearance: none;
@@ -183,10 +184,6 @@ task-list li:hover {
 .task-buttons .delete-btn{
     background: #ff6f91;
 }
-
-
-
-
 
 
 
