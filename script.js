@@ -16,9 +16,11 @@ document.addEventListener('DOMContentLoaded', () =>{
         }
 
         const li = document.createElement('li')
-        li.textContent = taskText;
+        li.innerHTML = `<input type="checkbox" class="task-checkbox"> <span>${taskText}</span>`;
+       
         taskList.appendChild(li)
         taskInput.value = '';
+        toggleEmptyState();
     };
     addTaskBtn.addEventListener('click', addTask);
     taskInput.addEventListener('keypress', (e) => {
