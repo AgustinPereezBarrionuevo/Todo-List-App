@@ -149,6 +149,10 @@ task-list li:hover {
 
 } 
 
+#task-list li.completed span {
+    
+}
+
 
 
 .task-buttons{

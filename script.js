@@ -10,18 +10,33 @@ document.addEventListener('DOMContentLoaded', () =>{
         todosContainer.style.width = taskList.children.length > 0 ? '100%' : '50%';
     }
 
-    const addTask = (event) => {
-        event.preventDefault();
-        const taskText = taskInput.value.trim();
-        if(!taskText){
+    const addTask = (text, completed = false) => {
+        const taskText = text || taskInput.value.trim();
+        if (!taskText) {
             return;
         }
 
         const li = document.createElement('li')
-        li.innerHTML = `<input type="checkbox" class="task-checkbox"> <span>${taskText}</span> <div class ="task-buttons"><button class="edit-btn"><i class="fa-solid fa-pen"></i></button><button class="delete-btn"><i class="fa-solid fa-trash"></i></button></div>`;
+        li.innerHTML = `<input type="checkbox" class="task-checkbox" ${completed ? 'checked' : ''} /> <span>${taskText}</span> <div class ="task-buttons"><button class="edit-btn"><i class="fa-solid fa-pen"></i></button><button class="delete-btn"><i class="fa-solid fa-trash"></i></button></div>`;
 
         const taskCheckbox = li.querySelector('.task-checkbox');
         const editBtn = li.querySelector('.edit-btn');
+
+        if (completed) {
+            li.classList.add('completed');
+            editBtn.disabled = true;
+            editBtn.style.opacity = '0.5';
+            editBtn.style.pointerEvents = 'none';
+        }
+
+        taskCheckbox.addEventListener('change', () => {
+            const isChecked = taskCheckbox.checked;
+            li.classList.toggle('completed', isChecked);
+            editBtn.disabled = isChecked;
+            editBtn.style.opacity = isChecked ? '0.5' : '1';
+            editBtn.style.pointerEvents = isChecked ? 'none' : 'auto';
+        });
+
 
         editBtn.addEventListener('click', () => {
             if(!taskCheckbox.checked){
@@ -40,11 +55,19 @@ document.addEventListener('DOMContentLoaded', () =>{
         taskInput.value = '';
         toggleEmptyState();
     };
-    addTaskBtn.addEventListener('click', addTask);
-    taskInput.addEventListener('keypress', (e) => {
-        if(e.key === 'Enter'){
-            addTask(e);
-        }
-    })
+    
+  addTaskBtn.addEventListener('click', () => addTask());
+
+taskInput.addEventListener('keypress', (e) => {
+    if(e.key === 'Enter'){
+        addTask();
+    }
+});
+
+const form = document.querySelector('.input-area');
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+});
 
 });
